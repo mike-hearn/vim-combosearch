@@ -1,5 +1,7 @@
 " Displays an input field where it accepts two characters, then sends those
 " characters to the FZF Command FileAndCodeSearchWithPrefix
+let s:plugindir = expand('<sfile>:p:h:h')
+
 function! GetTwoCharactersAndSendToFZF()
   echon "File/code search> "
   let l:number = 2
@@ -12,17 +14,16 @@ function! GetTwoCharactersAndSendToFZF()
     let l:number -= 1
   endwhile
 
+  echo " "
+  redraw!
   execute "FileAndCodeSearchWithPrefix " . l:string
-  call feedkeys(l:string)
 endfunction
-
-let s:plugindir = expand('<sfile>:p:h:h')
 
 autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
       \   s:plugindir . '/plugin/search.sh ' . <q-args>,
       \   1,
-      \   <bang>0 ? fzf#vim#with_preview('up:60%')
-      \           : fzf#vim#with_preview('right:50%:hidden', '?'),
+      \   <bang>0 ? fzf#vim#with_preview({'options': '-q ' . <q-args>}, 'up:60%')
+      \           : fzf#vim#with_preview({'options': '-q ' . <q-args>}, 'right:50%:hidden', '?'),
       \   <bang>0
       \)
