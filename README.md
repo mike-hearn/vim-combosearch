@@ -5,7 +5,7 @@ Combined file/code fuzzy search powered by
 [ripgrep](https://github.com/BurntSushi/ripgrep), and
 [fd](https://github.com/sharkdp/fd).
 
-<p align="center"><b>TOC:</b> [Requirements](#requirements) | Installation | Settings/Configuration | FAQ</p>
+<p align="center"><b>TOC:</b> <a href="#requirements">Requirements</a> | Installation | Settings/Configuration | FAQ</p>
 
 ## Requirements
 
