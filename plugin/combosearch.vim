@@ -1,5 +1,10 @@
 " Displays an input field where it accepts two characters, then sends those
 " characters to the FZF Command FileAndCodeSearchWithPrefix
+
+" User provided settings
+let s:exact = get(g:, 'combosearch_fzf_exact_match', 1)
+let s:ignore_options = get(g:, 'combosearch_ignore_patterns', [".git", "node_modules"])
+
 let s:plugindir = expand('<sfile>:p:h:h')
 
 function! GetTwoCharactersAndSendToFZF()
@@ -21,9 +26,9 @@ endfunction
 
 autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
-      \   s:plugindir . '/plugin/search.sh ' . <q-args>,
+      \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>) . ' ' . join(s:ignore_options, '\\n'),
       \   1,
-      \   <bang>0 ? fzf#vim#with_preview({'options': '-q ' . <q-args>}, 'up:60%')
-      \           : fzf#vim#with_preview({'options': '-q ' . <q-args>}, 'right:50%:hidden', '?'),
+      \   <bang>0 ? fzf#vim#with_preview({'options': '--exact -q ' . shellescape(<q-args>)}, 'up:60%')
+      \           : fzf#vim#with_preview({'options': '--exact -q ' . shellescape(<q-args>)}, 'right:50%:hidden', '?'),
       \   <bang>0
       \)
