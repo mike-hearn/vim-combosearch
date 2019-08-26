@@ -9,8 +9,6 @@ let s:combosearch_pattern_length = get(g:, 'combosearch_pattern_length', 3)
 
 " Privately used variables
 let s:plugindir = expand('<sfile>:p:h:h')
-let s:executables_not_found = 0  " Set to 1 if any of the required bins are missing
-let s:missing_executables = []   " List of missing binaries, if any
 
 " Set key mapping, if specified
 if s:trigger_key != "NONE"
@@ -20,14 +18,13 @@ endif
 " Given a string filename of a binary (example: 'sh'), sets
 " executables_not_found to 1 if the binary does not exist on the PATH
 function! s:verify_executable(binname)
-  if executable(a:binname) == 0
-    let s:executables_not_found = 1
-    call add(s:missing_executables, a:binname)
-  endif
 endfunction
 
 " Checks against OS
 function! s:validate_compatibility()
+  let s:executables_not_found = 0  " Set to 1 if any of the required bins are missing
+  let s:missing_executables = []   " List of missing binaries, if any
+
   " Won't work on Windows
   if has('win32')
     echoerr "Plugin not compatible with Windows; try running vim in WSL"
@@ -36,7 +33,10 @@ function! s:validate_compatibility()
 
   " Verify all executables
   for i in ['rg', 'fd', 'fzf', 'sh']
-    call s:verify_executable(i)
+    if executable(i) == 0
+      let s:executables_not_found = 1
+      call add(s:missing_executables, i)
+    endif
   endfor
   if s:executables_not_found
     echoerr "vim-combosearch requires external binaries: " . join(s:missing_executables, ', ')
