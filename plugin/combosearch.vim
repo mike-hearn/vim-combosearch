@@ -49,9 +49,9 @@ endfunction
 function! s:on_input_change()
   if len(getcmdline()) == s:combosearch_pattern_length
     call feedkeys("\<CR>")
+    echo " "
+    redraw!
   endif
-  echo " "
-  redraw!
 endfunction
 
 function! VimCombosearch()
@@ -64,7 +64,7 @@ function! VimCombosearch()
     autocmd CmdlineChanged @ call s:on_input_change()
   augroup end
 
-  let l:string = input("File/code search> ")
+  let l:string = input("File/code search: ")
 
   au! input_test
 
