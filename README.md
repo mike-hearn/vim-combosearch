@@ -11,7 +11,7 @@ Combined file/code fuzzy search powered by
 <p align="center"><b>TOC:</b>
 <a href="#introduction">Introduction</a> |
 <a href="#requirements">Requirements</a> |
-<a href="#settings">Settings/Configuration</a> |
+<a href="#settingsconfiguration">Settings/Configuration</a> |
 <a href="#faq">FAQ</a> |
 <a href="#screenshots">Screenshots & Use-Cases</a>
 <hr/>
@@ -19,8 +19,8 @@ Combined file/code fuzzy search powered by
 ## Introduction
 
 vim-combosearch combines filename search and code search into a single,
-filter-able list. I know it sounds simple but I've found it incredibly
-productive in my day-to-day work.
+filter-able list. I know it seems simple but I've found it very productive in
+my day-to-day work.
 
 One search of a `pattern` returns:
 
@@ -38,19 +38,18 @@ job).
 
 ## Requirements
 
+<b>Binary requirements:</b>
+
 * [fzf](https://github.com/junegunn/fzf)
-* [fzf.vim](https://github.com/junegunn/fzf.vim)
 * [ripgrep](https://github.com/BurntSushi/ripgrep)
 * [fd](https://github.com/sharkdp/fd)
 
-Also currently <b>MacOS/Linux only</b> due to the search script using `bash`
-(though Windows users should be able to use WSL).
+<b>Additional vim plugin requirements:</b>
 
-(And yes, that's a lot of external requirements, which might understandably
-offend the purists. I feel your pain. I wanted this to be as portable as
-possible, but I wasn't willing to compromise on getting the exact search
-results I wanted. For more info, see the FAQ for "Why doesn't this work with
-just `grep` and `find`?")
+* [fzf.vim](https://github.com/junegunn/fzf.vim)
+
+Currently <b>MacOS/Linux only</b> due to the search script using `bash`
+(though Windows users should be able to use WSL).
 
 ## Installation
 
@@ -74,18 +73,56 @@ endif
 
 call plug#begin('~/.vim/plugged')
 
+" Optional if you want vim to auto-install the fzf binary
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+
+" Required
+Plug 'junegunn/fzf.vim'  " Place before vim-combosearch
 Plug 'mike-hearn/vim-combosearch'
 
 call plug#end()
 
+" Sets the key mapping to trigger search
 let g:combosearch_trigger_key = "<c-p>"
 ```
 
 ## Settings/Configuration
 
-In progress.
+### g:combosearch_fzf_exact_match
+
+Set to 1 for fzf to default to accepting only exact (`--exact`) matches (this
+gives more accurate filter results, but is less forgiving). Set to 0 to turn
+filtering off.
+
+**Default:** 1
+
+```vim
+" Example usage
+let g:combosearch_fzf_exact_match = 1
+```
+
+### g:combosearch_ignore_patterns
+
+Accepts an array of .gitignore-esque ignore patterns to exclude from your
+file/code search.
+
+**Default:** `[".git", "node_modules"]`
+
+```vim
+let g:combosearch_ignore_patterns = [".git", "node_modules"]
+```
+
+### g:combosearch_trigger_key
+
+```vim
+let g:combosearch_trigger_key
+```
+
+### g:combosearch_pattern_length
+
+```vim
+let g:combosearch_pattern_length
+```
 
 ### Screenshots
 
