@@ -9,7 +9,9 @@ IGNORE_OPTIONS=$2
 TAG_BY_SEARCH_TYPE=0
 
 if [ -x "$(command -v fdfind)" ]; then
-	alias fd=fdfind
+	fd() {
+		fdfind
+	}
 fi
 
 _tag_search_type() {
