@@ -61,6 +61,4 @@ search_matches() {
 }
 
 # Finally, call the three search methods
-search_by_path
-search_matches
-search_all_lines_except_matches
+search_by_path & search_matches & search_all_lines_except_matches
