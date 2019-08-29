@@ -169,7 +169,7 @@ whatever my brain thinks of first.
 
 ### Why does this require `rg` and `fd`, instead of just `find` and `grep`?
 
-I hear ya. I would love for this to be more portable by only basic UNIX
+I hear ya. I would love for this to be more portable by only using basic UNIX
 tools, but I couldn't get the search results to be exactly what I wanted with
 those tools. Take a look at the
 [search.sh](https://github.com/mike-hearn/vim-combosearch/blob/master/plugin/search.sh)
