@@ -32,7 +32,10 @@ function! s:validate_compatibility()
   endif
 
   " Verify all executables
-  for i in ['rg', 'fd', 'fzf', 'sh']
+  if executable("fd") == 0 && executable("fdfind") == 0
+      let s:executables_not_found = 1
+  endif
+  for i in ['rg', 'fzf', 'sh']
     if executable(i) == 0
       let s:executables_not_found = 1
       call add(s:missing_executables, i)
