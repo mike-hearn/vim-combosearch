@@ -5,7 +5,7 @@ Combined file/code fuzzy search powered by
 [ripgrep](https://github.com/BurntSushi/ripgrep), and
 [fd](https://github.com/sharkdp/fd).
 
-![combosearch-lossy](https://user-images.githubusercontent.com/1016999/63821364-b8e72700-c91a-11e9-972a-770614775732.gif)
+![combosearch example](https://user-images.githubusercontent.com/1016999/63905223-979d3e00-c9e1-11e9-9f77-090b867c69c3.gif)
 
 <hr/>
 <p align="center"><b>TOC:</b>
