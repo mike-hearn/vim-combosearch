@@ -11,9 +11,10 @@ Combined file/code fuzzy search powered by
 <p align="center"><b>TOC:</b>
 <a href="#introduction">Introduction</a> |
 <a href="#requirements">Requirements</a> |
+<a href="#installation">Installation</a> |
+<a href="#usage">Usage</a> |
 <a href="#settingsconfiguration">Settings/Configuration</a> |
-<a href="#faq">FAQ</a> |
-<a href="#screenshots">Screenshots & Use-Cases</a>
+<a href="#faq">FAQ</a>
 <hr/>
 
 ## Introduction
@@ -28,8 +29,9 @@ One search of a `pattern` returns:
 * All code lines matching `pattern` (similar to `:grep`)
 * All lines contained in any file matching `pattern`
 
-To make this work, the search is executed *after three characters have been
-entered*, then characters 4 through *n* use `:FZF` to filter the results.
+This involves fuzzy filtering through *a lot* of files, so to reduce the
+amount, the search gets executed *after three characters have been entered*,
+then characters 4 through *n* use `:FZF` to filter the results.
 
 <b>Note:</b> Although functional, this is largely intended as a
 proof-of-concept of a type of code search I'd like to see implemented in every
@@ -53,13 +55,13 @@ Currently <b>MacOS/Linux only</b> due to the search script using `bash`
 
 ## Installation
 
-Make sure you've installed `ripgrep` and `fd.` On MacOS this is typically
-done with `brew install ripgrep fd`. On Linux use the package manager
-provided by your distribution, or follow the instructions on their respective
-README files.
+1. Install ripgrep (`rg`) and `fd` (either through `brew install ripgrep fd`
+on Mac, or your system's package manager on Linux)
+2. Install the [fzf.vim](https://github.com/junegunn/fzf.vim) plugin
+3. Install vim-combosearch
+4. Add `let g:combosearch_trigger_key = "<c-p>"` to your vim config (if you
+do not set this, the combosearch can still be run with `:ComboSearch`)
 
-Once those are installed, include the vim-combosearch plugin in your `.vimrc` /
-`init.vim`.
 
 Sample `.vimrc`:
 
@@ -86,13 +88,52 @@ call plug#end()
 let g:combosearch_trigger_key = "<c-p>"
 ```
 
+## Usage
+
+You can either:
+
+* Run it directly with `:ComboSearch`
+* Manually map a key to `:ComboSearch`
+* Set `let g:combosearch_trigger_key = "<c-p>"` (or whatever key you choose)
+to let the plugin handle the mapping
+
 ## Settings/Configuration
+
+### g:combosearch_trigger_key
+
+Set the key mapping to trigger the combosearch input.
+
+Because the default is set to none, until it's mapped you will have to call
+`:ComboSearch`.
+
+**Default:** None
+
+```vim
+" Recommended binding
+let g:combosearch_trigger_key = "<c-p>"
+```
+
+### g:combosearch_pattern_length
+
+Because combosearch can potentially end up filtering *a lot* of lines, the
+actual search doesn't get kicked off until *after three characters have been
+typed* (by default; see screenshots for this functionality in action) to
+prevent the search script from returning too many results.
+
+Depending on the speed of your CPU/hard drive, you may want to increase or
+decrease this limit.
+
+**Default:** 3
+
+```vim
+let g:combosearch_pattern_length = 3
+```
 
 ### g:combosearch_fzf_exact_match
 
 Set to 1 for fzf to default to accepting only exact (`--exact`) matches (this
 gives more accurate filter results, but is less forgiving). Set to 0 to turn
-filtering off.
+exact filtering off.
 
 **Default:** 1
 
@@ -112,78 +153,34 @@ file/code search.
 let g:combosearch_ignore_patterns = [".git", "node_modules"]
 ```
 
-### g:combosearch_trigger_key
-
-```vim
-let g:combosearch_trigger_key
-```
-
-### g:combosearch_pattern_length
-
-```vim
-let g:combosearch_pattern_length
-```
-
-### Screenshots
-
-1. You can search for a file name, then filter _within_ the file, all in one
-   command:
-
-   (example: search for `db/models/__init__.py` then filter down by `class`)
-
-* You can search for a file
-* You don't have to think "do I need grep or find" every time you want to
-	search your code base.
-
-
 ## Frequently asked questions?
-
-### What is this?
-
-<b>vim-combosearch</b> combines filename search and code search, allowing for faster-ish
-searching, better search patterns, and a lower cognitive load when attempting
-to search.
 
 ### What problems is this actually fixing? Like... what's the point?
 
-It solves a few problems, in my mind:
+The #1 reason I made this was to reduce my own cognitive load when jumping
+around files.
 
-1. It allows you to search a filename, then immediately filter down INTO the
-   file in one series of keystrokes.
+* Eliminating the question: do I need to use ctrl-p or `:grep`?
+* Eliminating the question: at what point can I safely hit `<enter>` when typing a pattern to search with `:Ag`
+* Eliminating the need to decide whether to search filename then code (example search: `utils models class CharField`) or code then filename (example search: `class CharField utils models`). Both are equally effective and return the same result.
 
-<b>Problem:</b>
+With this search method, I can just run `:ComboSearch` and start typing
+whatever my brain thinks of first.
 
-Many users search their code base in two distinct ways: 1) using a file search
-(like [ctrlp](https://github.com/kien/ctrlp.vim),
-[fzf.vim's](https://github.com/junegunn/fzf.vim) `:Files`) and 2) using `grep`,
+### Why does this require `rg` and `fd`, instead of just `find` and `grep`?
 
-This causes a few issues:
+I hear ya. I would love for this to be more portable by only basic UNIX
+tools, but I couldn't get the search results to be exactly what I wanted with
+those tools. Take a look at the
+[search.sh](https://github.com/mike-hearn/vim-combosearch/blob/master/plugin/search.sh)
+file to see the various `rg` and `fd` specific flags that are being used.
 
-1. In some languages, the actual name of a class or component might not be
-   declared in the code. For example, in Javascript you might have a
-   `ButtonClass` that is imported from `ButtonClass.jsx`, but in that file
-   itself, the name does not necessarily appear if exported as a pure function.
+I am 100% open to accepting PRs that offer a `grep`/`find` alternative.
 
-   If you *only* grep for `ButtonClass`, you will find everywhere the component
-   is imported, but not the component itself.
+### Why doesn't this work on Windows / in Gvim?
 
-2. Often times, when opening a file, what you really want is
-
-*tl;dr* most users search their code base in two distinct ways: 1) using a file
-search (like ctrlp, fzf.vim's `:Files`) and 2) using `grep`, `:Ag` or the like.
-This plugin combines those functions.
-
-*Longer explanation:*
-
-This plugin is a proof-of-concept for how to combine file and code search for
-maximum usability.  This plugin that waits until you've typed 2 characters, but
-then sends *all matching files and lines of code* to FZF to be filtered.
-
-The benefits are that, with one command, you can:
-
-* Search by filename
-* Search for any line of code
-* Search with a combination of a file name, then immediately filter down into the code
-
-Sometimes you might think you're searching by filename, then realize you want
-to further filter down to a specific line.
+The hard work in this script is done with
+[search.sh](https://github.com/mike-hearn/vim-combosearch/blob/master/plugin/search.sh),
+which requires `bash`. If you have any ideas for how to move that script into
+either VimL, or some other cross-platform scripting language, hit me with a
+PR.
