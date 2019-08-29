@@ -10,7 +10,7 @@ TAG_BY_SEARCH_TYPE=0
 
 if [ -x "$(command -v fdfind)" ]; then
 	fd() {
-		fdfind
+		fdfind "$@"
 	}
 fi
 
@@ -44,6 +44,7 @@ search_all_lines_except_matches() {
 			--line-number \
 			--max-columns=500 \
 			--no-heading \
+			--no-messages \
 			--with-filename \
 			"$SEARCH_QUERY" $(fd "$SEARCH_QUERY") 2> /dev/null | \
 		rg ":.*:.*:.*\w.*$" | \
@@ -61,6 +62,7 @@ search_matches() {
 		--line-number \
 		--max-columns=500 \
 		--no-heading \
+		--no-messages \
 		--with-filename \
 		"$SEARCH_QUERY" 2> /dev/null | \
 	_tag_search_type "search_matches"
