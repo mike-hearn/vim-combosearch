@@ -34,6 +34,7 @@ function! s:validate_compatibility()
   " Verify all executables
   if executable("fd") == 0 && executable("fdfind") == 0
       let s:executables_not_found = 1
+      call add(s:missing_executables, "fd")
   endif
   for i in ['rg', 'fzf', 'sh']
     if executable(i) == 0
