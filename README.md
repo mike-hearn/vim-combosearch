@@ -1,6 +1,6 @@
 # vim-combosearch
 
-Combined file/code fuzzy search powered by
+This plugin extends `fzf.vim` to provide a combined file/code fuzzy search. Powered by
 [fzf](https://github.com/junegunn/fzf),
 [ripgrep](https://github.com/BurntSushi/ripgrep), and
 [fd](https://github.com/sharkdp/fd).
