@@ -5,6 +5,7 @@
 let s:exact = get(g:, 'combosearch_fzf_exact_match', 1)
 let s:ignore_options = get(g:, 'combosearch_ignore_patterns', [".git", "node_modules"])
 let s:trigger_key = get(g:, 'combosearch_trigger_key', 'NONE')
+let s:trigger_key_search_all = get(g:, 'combosearch_trigger_key_all', 'NONE')
 let s:combosearch_pattern_length = get(g:, 'combosearch_pattern_length', 3)
 
 " Privately used variables
@@ -13,6 +14,7 @@ let s:plugindir = expand('<sfile>:p:h:h')
 " Set key mapping, if specified
 if s:trigger_key != "NONE"
   execute "nnoremap <silent> " . s:trigger_key . " :call VimCombosearch()<CR>"
+  execute "nnoremap <silent> " . s:trigger_key_search_all . " :call VimCombosearchAll()<CR>"
 endif
 
 " Given a string filename of a binary (example: 'sh'), sets
@@ -58,6 +60,14 @@ function! s:on_input_change()
   endif
 endfunction
 
+function! s:on_input_change_longer()
+  if len(getcmdline()) == (s:combosearch_pattern_length + 2)
+    call feedkeys("\<CR>")
+    echo " "
+    redraw!
+  endif
+endfunction
+
 function! VimCombosearch()
   if s:validate_compatibility() == 0
     return
@@ -75,10 +85,36 @@ function! VimCombosearch()
   execute "FileAndCodeSearchWithPrefix " . l:string
 endfunction
 
+function! VimCombosearchAll()
+  if s:validate_compatibility() == 0
+    return
+  endif
+
+  augroup input_test
+    au!
+    autocmd CmdlineChanged @ call s:on_input_change_longer()
+  augroup end
+
+  let l:string = input("File/code search: ")
+
+  au! input_test
+
+  execute "AllFileAndCodeSearchWithPrefix " . l:string
+endfunction
+
 autocmd VimEnter * command! -bang -nargs=0 ComboSearch call VimCombosearch()
 autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
       \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>) . ' ' . join(s:ignore_options, '\\n'),
+      \   1,
+      \   <bang>0 ? fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'up:60%')
+      \           : fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'right:50%:hidden', '?'),
+      \   <bang>0
+      \)
+
+autocmd VimEnter * command! -bang -nargs=* AllFileAndCodeSearchWithPrefix
+      \ call fzf#vim#grep(
+      \   s:plugindir . '/plugin/search_all.sh ' . shellescape(<q-args>) . ' ' . join(s:ignore_options, '\\n'),
       \   1,
       \   <bang>0 ? fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'up:60%')
       \           : fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'right:50%:hidden', '?'),
