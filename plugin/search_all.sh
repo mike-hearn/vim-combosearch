@@ -1,17 +1,25 @@
 #!/usr/bin/env bash
 
 # Arguments
-SEARCH_QUERY="$(tr -d "\"\`\'^$" <<<"$1")"
+search_query="$(tr -d "\"\`\'^$" <<<"$1")"
+
+# Colors
+black="$(tput setaf 0)"
+red="$(tput setaf 1)"
+green="$(tput setaf 2)"
+orange="$(tput setaf 3)"
+blue="$(tput setaf 4)"
+reset="$(tput sgr0)"
 
 colorize_file_output() {
-	sed -E 's/^(.*)(:[0-9]+:[0-9]+)/\o033[0;33m\1\o033[0m\2/g'
+	LC_ALL=C sed -E "s/^(.*)(:[0-9]+:[0-9]+)/$orange\1$black\2$reset/g"
 }
 
 colorize_output() {
-	sed -E 's/^(.*):([0-9]+):([0-9]+)(:)/\o033[1;31m\1\o033[0m:\o033[1;32m\2:\o033[0m\3\o033[0m\4 /g'
+	LC_ALL=C sed -E "s|^(.*):([0-9]+):([0-9]+)(:)|$red\1$reset:$green\2$(tput sgr0):$reset\3\4 |g"
 }
 
-sort -u <(rg --files | rg --ignore-case "$SEARCH_QUERY") <(git ls-files) | sed "s/$/:0:0/g" | colorize_file_output
+sort -u <(rg --files | rg --ignore-case "$search_query") <(git ls-files) | sed "s/$/:0:0/g" | colorize_file_output
 
 rg \
 	-uuuu \
@@ -23,5 +31,5 @@ rg \
 	--no-heading \
 	--no-messages \
 	--with-filename \
-	"[A-Za-z0-9]" 2> /dev/null | rg --ignore-case "$SEARCH_QUERY" | colorize_output
+	"[A-Za-z0-9]" 2> /dev/null | rg --ignore-case "$search_query" | colorize_output
 
