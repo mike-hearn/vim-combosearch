@@ -24,18 +24,21 @@ colorize_output() {
 	LC_ALL=C sed -E "s|^(.*):([0-9]+):([0-9]+)(:)|$red\1$reset:$green\2$(tput sgr0):$reset\3\4 |g"
 }
 
-sort -u <(rg --files | rg --ignore-case "$SEARCH_QUERY") <(git ls-files) | sed "s/$/:0:0/g" | colorize_file_output
+callcommand() {
+	sort -u <(rg --files | rg --ignore-case "$SEARCH_QUERY") <(git ls-files) | sed "s/$/:0:0/g" | colorize_file_output
 
-rg \
-	--color=never \
-	--column \
-	--hidden \
-	--ignore-case \
-	--ignore-file=<(printf "$IGNORE_OPTIONS") \
-	--line-number \
-	--max-columns=500 \
-	--no-heading \
-	--no-messages \
-	--with-filename \
-	"[A-Za-z0-9]" 2> /dev/null | rg --ignore-case "$SEARCH_QUERY" | colorize_output
+	rg \
+		--color=never \
+		--column \
+		--hidden \
+		--ignore-case \
+		--ignore-file=<(printf "$IGNORE_OPTIONS") \
+		--line-number \
+		--max-columns=500 \
+		--no-heading \
+		--no-messages \
+		--with-filename \
+		"[A-Za-z0-9]" 2> /dev/null | rg --ignore-case "$SEARCH_QUERY" | colorize_output
+	}
 
+callcommand & trap 'kill -9 $!' SIGPIPE
