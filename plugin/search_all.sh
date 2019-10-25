@@ -20,7 +20,7 @@ colorize_output() {
 }
 
 callcommand() {
-	sort -u <(rg -uu --files | rg --ignore-case "$search_query") <(git ls-files) | sed "s/$/:0:0/g" | colorize_file_output
+	awk '!x[$0]++' <({ rg -uu --files 2> /dev/null | rg --ignore-case "$search_query"; } & { git ls-files 2> /dev/null; }) | sed "s/$/:0:0/g" | colorize_file_output
 
 	rg \
 		-uu \

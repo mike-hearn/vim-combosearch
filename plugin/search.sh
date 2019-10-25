@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-# Colors
-RED='\033[0;31m'
-NC='\033[0m' # No Color
-
 # Arguments
 SEARCH_QUERY="$(tr -d "\"\`\'^$" <<<"$1")"
 IGNORE_OPTIONS=$2
@@ -25,7 +21,7 @@ colorize_output() {
 }
 
 callcommand() {
-	sort -u <(rg --files | rg --ignore-case "$SEARCH_QUERY") <(git ls-files) | sed "s/$/:0:0/g" | colorize_file_output
+	awk '!x[$0]++' <({ rg --files 2> /dev/null | rg --ignore-case "$SEARCH_QUERY"; } & { git ls-files 2> /dev/null; }) | sed "s/$/:0:0/g" | colorize_file_output
 
 	rg \
 		--color=never \
