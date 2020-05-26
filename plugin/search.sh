@@ -20,21 +20,27 @@ colorize_output() {
 	LC_ALL=C sed -E "s|^(.*):([0-9]+):([0-9]+)(:)|$red\1$reset:$green\2$(tput sgr0):$reset\3\4 |g"
 }
 
-callcommand() {
-	awk '!x[$0]++' <({ rg --files 2> /dev/null | rg --ignore-case "$SEARCH_QUERY"; } & { git ls-files 2> /dev/null; }) | sed "s/$/:0:0/g" | colorize_file_output
+callgitgrepcommand() {
+	git --no-pager ls-files -cmo --exclude-standard ":(icase)**$SEARCH_QUERY**" | sed "s/$/:0:0/g" | colorize_file_output
+	awk '!x[$0]++' <(
+		(git --no-pager grep -I --line-number --ignore-case --untracked "$SEARCH_QUERY" | sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output) &
+		(git --no-pager grep -I --line-number --untracked "[A-Za-z0-9]" ":(icase)**$SEARCH_QUERY**" | sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
+	)
+}
 
-	rg \
-		--color=never \
-		--column \
-		--hidden \
-		--ignore-case \
-		--ignore-file=<(printf "$IGNORE_OPTIONS") \
-		--line-number \
-		--max-columns=500 \
-		--no-heading \
-		--no-messages \
-		--with-filename \
-		"[A-Za-z0-9]" 2> /dev/null | rg --ignore-case "$SEARCH_QUERY" | colorize_output
-	}
+callgrepcommand() {
+	awk '!x[$0]++' <(
+		(find . -type f -ipath "*$SEARCH_QUERY*" | sed "s/$/:0:0/g" | colorize_file_output) &
+		(grep -RIH --ignore-case --line-number "$SEARCH_QUERY" . | sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output) &
+		(grep -RIH --ignore-case --line-number --include "*$SEARCH_QUERY*" . . | sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
+	)
 
-callcommand & trap 'kill -9 $!' SIGPIPE
+}
+
+if git -C . rev-parse 2>/dev/null; then
+	callgitgrepcommand &
+	trap 'kill -9 $!' SIGPIPE
+else
+	callgrepcommand &
+	trap 'kill -9 $!' SIGPIPE
+fi
