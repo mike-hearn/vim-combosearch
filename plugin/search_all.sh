@@ -20,7 +20,10 @@ colorize_output() {
 }
 
 callcommand() {
-	awk '!x[$0]++' <({ rg -uu --files 2> /dev/null | rg --ignore-case "$search_query"; } & { git ls-files 2> /dev/null; }) | sed "s/$/:0:0/g" | colorize_file_output
+	awk '!x[$0]++' <(
+		{ rg -uu --files 2>/dev/null | rg --ignore-case "$search_query"; } &
+		{ git ls-files 2>/dev/null; }
+	) | sed "s/$/:0:0/g" | colorize_file_output
 
 	rg \
 		-uu \
@@ -32,7 +35,8 @@ callcommand() {
 		--no-heading \
 		--no-messages \
 		--with-filename \
-		"[A-Za-z0-9]" 2> /dev/null | rg --ignore-case "$search_query" | colorize_output
+		"[A-Za-z0-9]" 2>/dev/null | rg --ignore-case "$search_query" | colorize_output
 }
 
-callcommand & trap 'kill -9 $!' SIGPIPE
+callcommand &
+trap 'kill -9 $!' SIGPIPE
