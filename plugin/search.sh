@@ -30,8 +30,8 @@ callgitgrepcommand() {
 callgrepcommand() {
 	awk '!x[$0]++' <(
 		(find . -type f -ipath "*$SEARCH_QUERY*" | LC_ALL=C sed "s/$/:0:0/g" | colorize_file_output) &
-		(grep -RIH --ignore-case --line-number "$SEARCH_QUERY" . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output) &
-		(grep -RIH --ignore-case --line-number --include "*$SEARCH_QUERY*" . . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
+		(grep -rIH --ignore-case --line-number "$SEARCH_QUERY" . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output) &
+		(grep -rIH --ignore-case --line-number --include "*$SEARCH_QUERY*" . . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
 	)
 
 }
