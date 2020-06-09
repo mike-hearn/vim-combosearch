@@ -33,22 +33,6 @@ function! s:validate_compatibility()
     return 0
   endif
 
-  " Verify all executables
-  if executable("fd") == 0 && executable("fdfind") == 0
-      let s:executables_not_found = 1
-      call add(s:missing_executables, "fd")
-  endif
-  for i in ['rg', 'fzf', 'sh']
-    if executable(i) == 0
-      let s:executables_not_found = 1
-      call add(s:missing_executables, i)
-    endif
-  endfor
-  if s:executables_not_found
-    echoerr "vim-combosearch requires external binaries: " . join(s:missing_executables, ', ')
-    return 0
-  endif
-
   return 1
 endfunction
 

@@ -1,6 +1,8 @@
 # vim-combosearch
 
-This plugin extends `fzf.vim` to provide a combined file/code fuzzy search. 
+This plugin extends `fzf.vim` to provide a combined file/code fuzzy search in a single interface.
+
+*(Note: Due to `bash` requirement this is currently Linux/MacOS/WSL only.)*
 
 ![combosearch example](https://user-images.githubusercontent.com/1016999/63905223-979d3e00-c9e1-11e9-9f77-090b867c69c3.gif)
 
@@ -16,9 +18,8 @@ This plugin extends `fzf.vim` to provide a combined file/code fuzzy search.
 
 ## Introduction
 
-vim-combosearch combines filename search and code search into a single,
-filter-able list. I know it seems simple but I've found it very productive in
-my day-to-day work.
+vim-combosearch combines filename, file contents and line numbers into a
+single filterable list.
 
 One search of a `pattern` returns:
 
@@ -27,7 +28,7 @@ One search of a `pattern` returns:
 * All lines contained in any file matching `pattern`
 
 This involves fuzzy filtering through *a lot* of files, so to reduce the
-amount, the search gets executed *after three characters have been entered*,
+amount, the search gets executed after three (3) characters have been entered,
 then characters 4 through *n* use `:FZF` to filter the results.
 
 <b>Note:</b> Although functional, this is largely intended as a
@@ -36,14 +37,6 @@ code editor (hopefully implemented better than this, which is sort of a hack
 job).
 
 ## Requirements
-
-<b>Binary requirements:</b>
-
-* [fzf](https://github.com/junegunn/fzf)
-* [ripgrep](https://github.com/BurntSushi/ripgrep)
-* [fd](https://github.com/sharkdp/fd)
-
-<b>Additional vim plugin requirements:</b>
 
 * [fzf.vim](https://github.com/junegunn/fzf.vim)
 
@@ -152,27 +145,17 @@ let g:combosearch_ignore_patterns = [".git", "node_modules"]
 
 ## Frequently asked questions?
 
-### What problems is this actually fixing? Like... what's the point?
+### What problems is this actually fixing? What's the point?
 
 The #1 reason I made this was to reduce my own cognitive load when jumping
 around files.
 
-* Eliminating the question: do I need to use ctrl-p or `:grep`?
+* Eliminating the question: do I need to use `ctrl-p` or `:grep`?
 * Eliminating the question: at what point can I safely hit `<enter>` when typing a pattern to search with `:Ag`
 * Eliminating the need to decide whether to search filename then code (example search: `utils models class CharField`) or code then filename (example search: `class CharField utils models`). Both are equally effective and return the same result.
 
 With this search method, I can just run `:ComboSearch` and start typing
 whatever my brain thinks of first.
-
-### Why does this require `rg` and `fd`, instead of just `find` and `grep`?
-
-I hear ya. I would love for this to be more portable by only using basic UNIX
-tools, but I couldn't get the search results to be exactly what I wanted with
-those tools. Take a look at the
-[search.sh](https://github.com/mike-hearn/vim-combosearch/blob/master/plugin/search.sh)
-file to see the various `rg` and `fd` specific flags that are being used.
-
-I am 100% open to accepting PRs that offer a `grep`/`find` alternative.
 
 ### Why doesn't this work on Windows / in Gvim?
 
