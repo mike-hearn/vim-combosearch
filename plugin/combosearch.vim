@@ -3,7 +3,6 @@
 
 " User provided settings
 let s:exact = get(g:, 'combosearch_fzf_exact_match', 1)
-let s:ignore_options = get(g:, 'combosearch_ignore_patterns', [".git", "node_modules"])
 let s:trigger_key = get(g:, 'combosearch_trigger_key', 'NONE')
 let s:trigger_key_search_all = get(g:, 'combosearch_trigger_key_all', 'NONE')
 let s:combosearch_pattern_length = get(g:, 'combosearch_pattern_length', 3)
@@ -89,7 +88,7 @@ endfunction
 autocmd VimEnter * command! -bang -nargs=0 ComboSearch call VimCombosearch()
 autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
-      \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>) . ' ' . join(s:ignore_options, '\\n'),
+      \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>),
       \   1,
       \   <bang>0 ? fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'up:60%')
       \           : fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'right:50%:hidden', '?'),
@@ -98,7 +97,7 @@ autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
 
 autocmd VimEnter * command! -bang -nargs=* AllFileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
-      \   s:plugindir . '/plugin/search_all.sh ' . shellescape(<q-args>) . ' ' . join(s:ignore_options, '\\n'),
+      \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>) . ' ' . 'all',
       \   1,
       \   <bang>0 ? fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'up:60%')
       \           : fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'right:50%:hidden', '?'),

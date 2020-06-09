@@ -29,7 +29,7 @@ One search of a `pattern` returns:
 
 This involves fuzzy filtering through *a lot* of files, so to reduce the
 amount, the search gets executed after three (3) characters have been entered,
-then characters 4 through *n* use `:FZF` to filter the results.
+then characters 4 through *n* use `fzf` to filter the results.
 
 <b>Note:</b> Although functional, this is largely intended as a
 proof-of-concept of a type of code search I'd like to see implemented in every
@@ -130,17 +130,6 @@ exact filtering off.
 ```vim
 " Example usage
 let g:combosearch_fzf_exact_match = 1
-```
-
-### g:combosearch_ignore_patterns
-
-Accepts an array of .gitignore-esque ignore patterns to exclude from your
-file/code search.
-
-**Default:** `[".git", "node_modules"]`
-
-```vim
-let g:combosearch_ignore_patterns = [".git", "node_modules"]
 ```
 
 ## Frequently asked questions?

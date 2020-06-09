@@ -2,7 +2,6 @@
 
 # Arguments
 SEARCH_QUERY="$(tr -d "\"\`\'^$" <<<"$1")"
-IGNORE_OPTIONS=$2
 
 # Colors
 black="$(tput setaf 0)"
@@ -37,7 +36,7 @@ callgrepcommand() {
 
 }
 
-if git -C . rev-parse 2>/dev/null; then
+if (git -C . rev-parse 2>/dev/null) && [ "$2" != 'all' ]; then
 	callgitgrepcommand &
 	trap 'kill -9 $!' SIGPIPE
 else
