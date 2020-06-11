@@ -51,8 +51,13 @@ function! s:on_input_change_longer()
   endif
 endfunction
 
-function! VimCombosearch()
+function! VimCombosearch(...)
   if s:validate_compatibility() == 0
+    return
+  endif
+
+  if a:0 > 0
+    execute "FileAndCodeSearchWithPrefix " . a:1
     return
   endif
 
@@ -85,7 +90,7 @@ function! VimCombosearchAll()
   execute "AllFileAndCodeSearchWithPrefix " . l:string
 endfunction
 
-autocmd VimEnter * command! -bang -nargs=0 ComboSearch call VimCombosearch()
+autocmd VimEnter * command! -bang -nargs=* ComboSearch call VimCombosearch(<f-args>)
 autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
       \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>),

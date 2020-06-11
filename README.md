@@ -1,6 +1,7 @@
 # vim-combosearch
 
-This plugin extends `fzf.vim` to provide a combined file/code fuzzy search in a single interface.
+This plugin extends `fzf.vim` to provide a combined filename search and code
+fuzzy search in a single interface.
 
 *(Note: Due to `bash` requirement this is currently Linux/MacOS/WSL only.)*
 
@@ -45,11 +46,9 @@ Currently <b>MacOS/Linux only</b> due to the search script using `bash`
 
 ## Installation
 
-1. Install ripgrep (`rg`) and `fd` (either through `brew install ripgrep fd`
-on Mac, or your system's package manager on Linux)
-2. Install the [fzf.vim](https://github.com/junegunn/fzf.vim) plugin
-3. Install vim-combosearch
-4. Add `let g:combosearch_trigger_key = "<c-p>"` to your vim config (if you
+1. Install the [fzf.vim](https://github.com/junegunn/fzf.vim) plugin
+2. Install vim-combosearch
+3. Add `let g:combosearch_trigger_key = "<c-p>"` to your vim config (if you
 do not set this, the combosearch can still be run with `:ComboSearch`)
 
 

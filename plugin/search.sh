@@ -33,7 +33,6 @@ callgrepcommand() {
 		(grep -rIHin "$SEARCH_QUERY" . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output) &
 		(grep -rIHin --include "*$SEARCH_QUERY*" . . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
 	)
-
 }
 
 if (git -C . rev-parse 2>/dev/null) && [ "$2" != 'all' ]; then
