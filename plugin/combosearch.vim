@@ -35,6 +35,11 @@ function! s:validate_compatibility()
   return 1
 endfunction
 
+" https://stackoverflow.com/a/4479072
+function! s:Strip(input_string)
+    return substitute(a:input_string, '^\s*\(.\{-}\)\s*$', '\1', '')
+endfunction
+
 function! s:on_input_change()
   if len(getcmdline()) == s:combosearch_pattern_length
     call feedkeys("\<CR>")
@@ -93,7 +98,7 @@ endfunction
 autocmd VimEnter * command! -bang -nargs=* ComboSearch call VimCombosearch(<f-args>)
 autocmd VimEnter * command! -bang -nargs=* FileAndCodeSearchWithPrefix
       \ call fzf#vim#grep(
-      \   s:plugindir . '/plugin/search.sh ' . shellescape(<q-args>),
+      \   s:plugindir . '/plugin/search.sh ' . shellescape(s:Strip(<q-args>)),
       \   1,
       \   <bang>0 ? fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'up:60%')
       \           : fzf#vim#with_preview({'options': '--prompt="Combo> " ' . (s:exact == 1 ? '--exact' : '') . ' -q ' . shellescape(<q-args>)}, 'right:50%:hidden', '?'),
