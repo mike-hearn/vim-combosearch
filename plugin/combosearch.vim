@@ -10,9 +10,11 @@ let s:combosearch_pattern_length = get(g:, 'combosearch_pattern_length', 3)
 " Privately used variables
 let s:plugindir = expand('<sfile>:p:h:h')
 
-" Set key mapping, if specified
+" Set key mappings, if specified
 if s:trigger_key != "NONE"
   execute "nnoremap <silent> " . s:trigger_key . " :call VimCombosearch()<CR>"
+endif
+if s:trigger_key_search_all != "NONE"
   execute "nnoremap <silent> " . s:trigger_key_search_all . " :call VimCombosearchAll()<CR>"
 endif
 
