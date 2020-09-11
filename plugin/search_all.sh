@@ -22,8 +22,8 @@ colorize_output() {
 callcommand() {
 	awk '!x[$0]++' <(
 		{ rg -uu --files 2>/dev/null | rg --ignore-case "$search_query"; } &
-		{ git ls-files 2>/dev/null; }
-	) | sed "s/$/:0:0/g" | colorize_file_output
+		{ git ls-files 2>/dev/null | rg --ignore-case "$search_query"; }
+	) | sed "s/$/:0:0:/g" | colorize_file_output
 
 	rg \
 		-uu \
