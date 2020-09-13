@@ -21,8 +21,8 @@ colorize_output() {
 
 callcommand() {
 	awk '!x[$0]++' <(
-		{ rg -uu --files 2>/dev/null | rg --ignore-case "$search_query"; } &
-		{ git ls-files 2>/dev/null | rg --ignore-case "$search_query"; }
+		{ rg --files 2>/dev/null | rg --ignore-case "$search_query" 2>/dev/null; } &
+		{ git ls-files 2>/dev/null | rg --ignore-case "$search_query" 2>/dev/null; }
 	) | sed "s/$/:0:0:/g" | colorize_file_output
 
 	rg \
@@ -35,7 +35,7 @@ callcommand() {
 		--no-heading \
 		--no-messages \
 		--with-filename \
-		"[A-Za-z0-9]" 2>/dev/null | rg --ignore-case "$search_query" | colorize_output
+		"$search_query" 2>/dev/null | colorize_output
 }
 
 callcommand &

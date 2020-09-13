@@ -19,16 +19,16 @@ colorize_output() {
 }
 
 callgitgrepcommand() {
-	git --no-pager ls-files -cmo --exclude-standard ":(icase)**$SEARCH_QUERY**" | LC_ALL=C sed "s/$/:0:0:/g" | colorize_file_output
+	git --no-pager ls-files -cmo --exclude-standard ":(icase)**$SEARCH_QUERY**" 2>/dev/null | LC_ALL=C sed "s/$/:0:0:/g" | colorize_file_output
 	awk '!x[$0]++' <(
-		(git --no-pager grep -I -n -i --untracked "$SEARCH_QUERY" | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
+		(git --no-pager grep -I -n -i --untracked "$SEARCH_QUERY" 2>/dev/null | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
 	)
 }
 
 callgrepcommand() {
 	awk '!x[$0]++' <(
-		(find . -type f -ipath "*$SEARCH_QUERY*" | LC_ALL=C sed "s/$/:0:0:/g" | colorize_file_output)
-		(grep -rIHin "$SEARCH_QUERY" . | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
+		(find . -type f -ipath "*$SEARCH_QUERY*" 2>/dev/null | LC_ALL=C sed "s/$/:0:0:/g" | colorize_file_output)
+		(grep -rIHin "$SEARCH_QUERY" . 2>/dev/null 2>/dev/null | LC_ALL=C sed -E "s/:([0-9]+):/:\1:0:/g" | colorize_output)
 	)
 }
 
