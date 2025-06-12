@@ -1,9 +1,9 @@
 # vim-combosearch
 
-This plugin extends `fzf.vim` to provide a combined filename search and code
+This Neovim Lua plugin extends `fzf.vim` to provide a combined filename search and code
 fuzzy search in a single interface.
 
-*(Note: Due to `bash` requirement this is currently Linux/MacOS/WSL only.)*
+**Now rewritten in Lua for better Neovim integration and cross-platform support!**
 
 ![combosearch example](https://user-images.githubusercontent.com/1016999/63905223-979d3e00-c9e1-11e9-9f77-090b867c69c3.gif)
 
@@ -39,97 +39,127 @@ job).
 
 ## Requirements
 
+* Neovim 0.7.0 or later
 * [fzf.vim](https://github.com/junegunn/fzf.vim)
 
-Currently <b>MacOS/Linux only</b> due to the search script using `bash`
-(though Windows users should be able to use WSL).
+The Lua version now has experimental Windows support! The plugin will work on all platforms,
+though performance may vary on Windows.
 
 ## Installation
 
 1. Install the [fzf.vim](https://github.com/junegunn/fzf.vim) plugin
 2. Install vim-combosearch
-3. Add `let g:combosearch_trigger_key = "<c-p>"` to your vim config (if you
-do not set this, the combosearch can still be run with `:ComboSearch`)
+3. Configure the plugin in your init.lua or init.vim
 
+### For Neovim with Lua configuration (init.lua):
 
-Sample `.vimrc`:
+```lua
+-- Using lazy.nvim
+{
+  'mike-hearn/vim-combosearch',
+  dependencies = {
+    'junegunn/fzf',
+    'junegunn/fzf.vim',
+  },
+  config = function()
+    require('combosearch').setup({
+      trigger_key = '<c-p>',        -- Key to trigger search
+      trigger_key_all = '<c-s-p>',  -- Key to trigger search all
+      pattern_length = 3,           -- Characters before search triggers
+      fzf_exact_match = true,       -- Use exact matching in fzf
+    })
+  end,
+}
+
+-- Or using packer.nvim
+use {
+  'mike-hearn/vim-combosearch',
+  requires = {
+    'junegunn/fzf',
+    'junegunn/fzf.vim',
+  },
+  config = function()
+    require('combosearch').setup({
+      trigger_key = '<c-p>',
+    })
+  end,
+}
+```
+
+### For traditional Vim/Neovim configuration (.vimrc/init.vim):
 
 ```vim
-" This will auto-install vim-plug; remove if you already have it
-if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
-    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-endif
-
 call plug#begin('~/.vim/plugged')
 
-" Optional if you want vim to auto-install the fzf binary
+" Required dependencies
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-
-" Required
-Plug 'junegunn/fzf.vim'  " Place before vim-combosearch
+Plug 'junegunn/fzf.vim'
 Plug 'mike-hearn/vim-combosearch'
 
 call plug#end()
 
-" Sets the key mapping to trigger search
-let g:combosearch_trigger_key = "<c-p>"
+" Configure combosearch after plugins are loaded
+lua << EOF
+require('combosearch').setup({
+  trigger_key = '<c-p>',
+  pattern_length = 3,
+})
+EOF
 ```
 
 ## Usage
 
-You can either:
+You can use combosearch in several ways:
 
-* Run it directly with `:ComboSearch`
-* Manually map a key to `:ComboSearch`
-* Set `let g:combosearch_trigger_key = "<c-p>"` (or whatever key you choose)
-to let the plugin handle the mapping
+* `:ComboSearch` - Start a search (will auto-trigger after typing 3 characters)
+* `:ComboSearch!` - Start a search with alternate preview layout
+* `:ComboSearch query` - Start a search with an initial query
+* `:ComboSearchAll` - Force search all files (ignores git repository)
+* `:ComboSearchAll!` - Force search all with alternate preview layout
+* Use the configured trigger key (e.g., `<c-p>`)
+* Use the configured trigger key for search all (e.g., `<c-s-p>`)
+
+Press `?` in the FZF window to toggle the preview pane.
 
 ## Settings/Configuration
 
-### g:combosearch_trigger_key
+The plugin is configured through the `setup()` function:
 
-Set the key mapping to trigger the combosearch input.
-
-Because the default is set to none, until it's mapped you will have to call
-`:ComboSearch`.
-
-**Default:** None
-
-```vim
-" Recommended binding
-let g:combosearch_trigger_key = "<c-p>"
+```lua
+require('combosearch').setup({
+  -- Key mapping to trigger search
+  trigger_key = '<c-p>',         -- Default: nil
+  
+  -- Key mapping to trigger search all (non-git)
+  trigger_key_all = '<c-s-p>',   -- Default: nil
+  
+  -- Number of characters before search triggers
+  pattern_length = 3,            -- Default: 3
+  
+  -- Use exact matching in fzf
+  fzf_exact_match = true,        -- Default: true
+  
+  -- FZF preview window position
+  preview_position = 'right:50%:hidden',  -- Default
+  preview_position_alt = 'up:60%',        -- Alternative position
+})
 ```
 
-### g:combosearch_pattern_length
+### Configuration Options
 
-Because combosearch can potentially end up filtering *a lot* of lines, the
-actual search doesn't get kicked off until *after three characters have been
-typed* (by default; see screenshots for this functionality in action) to
-prevent the search script from returning too many results.
+#### `trigger_key`
+Key mapping to trigger the combosearch. If not set, you'll need to use `:ComboSearch`.
 
-Depending on the speed of your CPU/hard drive, you may want to increase or
-decrease this limit.
+#### `trigger_key_all`
+Key mapping to trigger search all (forces filesystem search, ignoring git).
 
-**Default:** 3
+#### `pattern_length`
+Number of characters to type before the search automatically triggers. This prevents
+searching through too many results on short queries.
 
-```vim
-let g:combosearch_pattern_length = 3
-```
-
-### g:combosearch_fzf_exact_match
-
-Set to 1 for fzf to default to accepting only exact (`--exact`) matches (this
-gives more accurate filter results, but is less forgiving). Set to 0 to turn
-exact filtering off.
-
-**Default:** 1
-
-```vim
-" Example usage
-let g:combosearch_fzf_exact_match = 1
-```
+#### `fzf_exact_match`
+When `true`, fzf uses exact matching (`--exact` flag), which gives more accurate results
+but is less forgiving of typos. Set to `false` for fuzzy matching.
 
 ## Frequently asked questions?
 
@@ -145,10 +175,25 @@ around files.
 With this search method, I can just run `:ComboSearch` and start typing
 whatever my brain thinks of first.
 
-### Why doesn't this work on Windows / in Gvim?
+### Does this work on Windows?
 
-The hard work in this script is done with
-[search.sh](https://github.com/mike-hearn/vim-combosearch/blob/master/plugin/search.sh),
-which requires `bash`. If you have any ideas for how to move that script into
-either VimL, or some other cross-platform scripting language, hit me with a
-PR.
+Yes! The Lua version now has experimental Windows support. The plugin will automatically
+use appropriate commands for your platform. Performance may vary on Windows compared to
+Unix-like systems.
+
+### How is this different from the original Vimscript version?
+
+The Lua rewrite offers several improvements:
+- Better Neovim integration with modern Lua APIs
+- Cleaner configuration and setup
+- More maintainable codebase structure
+- Proper command bang support (`:ComboSearch!`)
+- FZF preview support restored
+
+Note: The search functionality still uses the optimized bash script for streaming
+performance. A full Lua implementation using async APIs is planned for the future.
+
+### Can I still use the old Vimscript version?
+
+The original Vimscript files are still in the repository. However, the Lua version
+is now the recommended and actively maintained version.
