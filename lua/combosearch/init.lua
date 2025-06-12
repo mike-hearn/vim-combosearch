@@ -124,13 +124,24 @@ local function run_search(opts)
   local preview_pos = opts.bang and config.get('preview_position_alt') or config.get('preview_position')
   
   -- Call fzf with streaming results and preview
+  local fzf_opts
+  if vim.fn.exists('*fzf#vim#with_preview') == 1 then
+    -- Use with_preview if available
+    fzf_opts = vim.fn['fzf#vim#with_preview']({
+      options = fzf_opts_str
+    }, preview_pos, '?')
+  else
+    -- Fallback without preview
+    fzf_opts = {
+      options = fzf_opts_str
+    }
+  end
+  
   vim.fn['fzf#vim#grep'](
     search_cmd,
     1,
-    vim.fn['fzf#vim#with_preview']({
-      options = fzf_opts_str
-    }, preview_pos, '?'),
-    opts.bang
+    fzf_opts,
+    opts.bang and 1 or 0
   )
 end
 
